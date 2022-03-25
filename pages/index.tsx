@@ -33,13 +33,9 @@ const Home: NextPage<
       </main>
 
       <footer className="flex h-24 w-full items-center justify-center border-t">
-        <a
-          className="flex items-center justify-center gap-2"
-          href="#"
-          rel="noopener noreferrer"
-        >
+        <span className="flex items-center justify-center gap-2">
           Powered by ♥
-        </a>
+        </span>
       </footer>
     </div>
   );

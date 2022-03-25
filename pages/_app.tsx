@@ -7,7 +7,7 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <title>Hello World!</title>
+        <title>Share your stuff!</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Component {...pageProps} />
