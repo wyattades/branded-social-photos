@@ -1,14 +1,12 @@
+/* eslint-disable jsx-a11y/alt-text */
 import type {
-  GetServerSidePropsContext,
   GetStaticPaths,
   GetStaticProps,
-  GetStaticPropsContext,
-  InferGetServerSidePropsType,
   InferGetStaticPropsType,
   NextPage,
 } from 'next';
 import * as _ from 'lodash-es';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Webcam from 'react-webcam';
 import {
   FacebookShareButton,
@@ -16,11 +14,11 @@ import {
   FacebookIcon,
   LinkedinIcon,
 } from 'react-share';
-
-import { cloudinary } from 'lib/images';
 import Head from 'next/head';
 
-export const getStaticPaths: GetStaticPaths = async (ctx) => {
+import { cloudinary } from 'lib/images';
+
+export const getStaticPaths: GetStaticPaths = async (_ctx) => {
   const res = await cloudinary.v2.api.resources({
     prefix: 'overlays/',
     type: 'upload',
@@ -40,12 +38,9 @@ export const getStaticPaths: GetStaticPaths = async (ctx) => {
 export const getStaticProps: GetStaticProps = async (ctx) => {
   const slug = ctx.params!.slug as string;
 
-  let overlay_url;
+  let res;
   try {
-    const res = await cloudinary.v2.api.resource(`overlays/${slug}`);
-
-    overlay_url =
-      process.env.NODE_ENV === 'development' ? res.url : res.secure_url;
+    res = await cloudinary.v2.api.resource(`overlays/${slug}`);
   } catch (err) {
     console.error(err);
     return {
@@ -53,12 +48,15 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
     };
   }
 
+  console.log(res);
+
   return {
     props: {
       brand: {
-        overlay_url,
+        overlay_url: res.secure_url,
         slug,
         title: _.startCase(slug),
+        link: res.context?.custom?.brand_link || null,
       },
     },
   };
@@ -167,7 +165,7 @@ const upload = async (dataUrl: string) => {
 };
 
 const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
-  brand: { title: brandTitle, overlay_url: overlayUrl },
+  brand: { title: brandTitle, overlay_url: overlayUrl, link: brandLink },
 }) => {
   const webcamRef = useRef<Webcam>(null);
 
@@ -189,7 +187,7 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
           style={{ maxWidth: '100rem' }}
         >
           <h1 className="mb-8 text-center text-5xl font-bold">
-            Share to {brandTitle}
+            Share with {brandTitle} ♥
           </h1>
 
           <br />
@@ -330,12 +328,8 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
       </main>
 
       <footer className="flex h-24 w-full items-center justify-center border-t">
-        <a
-          className="flex items-center justify-center gap-2"
-          href="#"
-          rel="noopener noreferrer"
-        >
-          Powered by ♥
+        <a href={brandLink} target="_blank" rel="noopener noreferrer">
+          Powered by <strong>{brandTitle}</strong>
         </a>
       </footer>
     </div>
