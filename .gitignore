@@ -131,3 +131,5 @@ dist
 
 # Tmp folder
 tmp/
+
+.vercel

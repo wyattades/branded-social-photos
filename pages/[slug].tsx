@@ -18,6 +18,7 @@ import {
 } from 'react-share';
 
 import { cloudinary } from 'lib/images';
+import Head from 'next/head';
 
 export const getStaticPaths: GetStaticPaths = async (ctx) => {
   const res = await cloudinary.v2.api.resources({
@@ -178,12 +179,16 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
 
   return (
     <div className="flex min-h-screen flex-col items-stretch">
+      <Head>
+        <title>Share to {brandTitle}</title>
+      </Head>
+
       <main className="flex-1">
         <div
           className="mx-auto w-full px-20 py-32"
           style={{ maxWidth: '100rem' }}
         >
-          <h1 className="mb-8 text-center text-6xl font-bold">
+          <h1 className="mb-8 text-center text-5xl font-bold">
             Share to {brandTitle}
           </h1>
 
