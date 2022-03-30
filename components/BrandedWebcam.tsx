@@ -1,24 +1,6 @@
 import { useRef, useState } from 'react';
 import Webcam from 'react-webcam';
 
-const upload = async (dataUrl: string) => {
-  const r = await fetch('/api/upload', {
-    method: 'POST',
-    body: JSON.stringify({
-      data_url: dataUrl,
-    }),
-    headers: {
-      'content-type': 'application/json',
-      accept: 'application/json',
-    },
-  });
-  if (r.ok) {
-    const { url } = await r.json();
-    return url;
-  }
-  return null;
-};
-
 const fitTo = (sourceCanvas: HTMLCanvasElement, w: number, h: number) => {
   const destCanvas = document.createElement('canvas');
   destCanvas.width = w;
@@ -55,8 +37,8 @@ const fitTo = (sourceCanvas: HTMLCanvasElement, w: number, h: number) => {
 
 export const BrandedWebcam: React.FC<{
   overlayUrl: string;
-  setPhotoUrl: (v: string) => void;
-}> = ({ overlayUrl, setPhotoUrl }) => {
+  onCapture: (dataUrl: string) => void;
+}> = ({ overlayUrl, onCapture }) => {
   const webcamRef = useRef<Webcam>(null);
 
   const [screenshot, setScreenshot] = useState<string | null>(null);
@@ -133,12 +115,7 @@ export const BrandedWebcam: React.FC<{
 
               setScreenshot(dataUrl);
 
-              upload(dataUrl).then((url) => {
-                if (url) {
-                  // setScreenshot(url);
-                  setPhotoUrl(url);
-                }
-              });
+              onCapture(dataUrl);
             }}
           >
             Capture!

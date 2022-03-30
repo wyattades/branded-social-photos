@@ -60,10 +60,47 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
   };
 };
 
+const upload = async (dataUrl: string) => {
+  try {
+    const r = await fetch('/api/upload', {
+      method: 'POST',
+      body: JSON.stringify({
+        data_url: dataUrl,
+      }),
+      headers: {
+        'content-type': 'application/json',
+        accept: 'application/json',
+      },
+    });
+    if (r.ok) {
+      const { url } = await r.json();
+      if (typeof url === 'string' && url) return url;
+    } else {
+      console.error('response not ok:', r.status, r);
+    }
+  } catch (err) {
+    console.error('response error:', err);
+  }
+  return null;
+};
+
 const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   brand: { title: brandTitle, overlay_url: overlayUrl, link: brandLink },
 }) => {
+  const [uploading, setUploading] = useState(false);
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+
+  const onCapture = async (dataUrl: string) => {
+    try {
+      setUploading(true);
+
+      const url = await upload(dataUrl);
+
+      setPhotoUrl(url);
+    } finally {
+      setUploading(false);
+    }
+  };
 
   return (
     <div className="flex min-h-screen flex-col items-stretch">
@@ -83,8 +120,10 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
           <br />
 
           <div className="flex flex-col items-center justify-center">
-            <BrandedWebcam overlayUrl={overlayUrl} setPhotoUrl={setPhotoUrl} />
-            {photoUrl && (
+            <BrandedWebcam overlayUrl={overlayUrl} onCapture={onCapture} />
+            {uploading ? (
+              <p className="my-4 italic text-gray-500">Saving...</p>
+            ) : photoUrl ? (
               <>
                 <p className="my-4 text-gray-600">{photoUrl}</p>
                 <br />
@@ -133,7 +172,7 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                   </LinkedinShareButton>
                 </div>
               </>
-            )}
+            ) : null}
           </div>
         </div>
       </main>
