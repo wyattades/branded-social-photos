@@ -43,14 +43,42 @@ export const BrandedWebcam: React.FC<{
 
   const [screenshot, setScreenshot] = useState<string | null>(null);
 
-  const size = 512;
+  const previewSize = { width: 512, height: 512 };
+  const resultSize = { width: 512, height: 512 };
+
+  const capture = async () => {
+    const sourceCanvas = webcamRef.current!.getCanvas({
+      width: webcamRef.current!.video!.videoWidth,
+      height: webcamRef.current!.video!.videoHeight,
+    })!;
+
+    const destCanvas = fitTo(sourceCanvas, resultSize.width, resultSize.height);
+
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    await new Promise<void>((resolve, reject) => {
+      img.onload = () => resolve();
+      img.onerror = () => reject();
+      img.src = overlayUrl;
+    });
+
+    const ctx = destCanvas.getContext('2d')!;
+    if (img.width !== resultSize.width || img.height !== resultSize.height) {
+      ctx.scale(resultSize.width / img.width, resultSize.height / img.height);
+    }
+    ctx.drawImage(img, 0, 0);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+    const dataUrl = destCanvas.toDataURL('image/jpeg', 0.92);
+
+    setScreenshot(dataUrl);
+
+    onCapture(dataUrl);
+  };
 
   return (
     <>
-      <div
-        className="relative inline-flex bg-gray-200"
-        style={{ width: size, height: size }}
-      >
+      <div className="relative inline-flex bg-gray-200" style={previewSize}>
         {screenshot ? (
           <img src={screenshot} style={{ objectFit: 'cover' }} />
         ) : (
@@ -93,30 +121,7 @@ export const BrandedWebcam: React.FC<{
           <button
             type="button"
             className="rounded-md bg-red-500 px-4 py-2 text-white"
-            onClick={async () => {
-              const sourceCanvas = webcamRef.current!.getCanvas({
-                width: webcamRef.current!.video!.videoWidth,
-                height: webcamRef.current!.video!.videoHeight,
-              })!;
-
-              const destCanvas = fitTo(sourceCanvas, 512, 512);
-
-              const img = new Image(512, 512);
-              img.crossOrigin = 'anonymous';
-              await new Promise<void>((resolve) => {
-                img.onload = () => resolve();
-                img.src = overlayUrl;
-              });
-              destCanvas.getContext('2d')!.drawImage(img, 0, 0);
-
-              console.log(destCanvas);
-
-              const dataUrl = destCanvas.toDataURL('image/jpeg', 0.92);
-
-              setScreenshot(dataUrl);
-
-              onCapture(dataUrl);
-            }}
+            onClick={capture}
           >
             Capture!
           </button>
