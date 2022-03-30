@@ -1,3 +1,6 @@
 {
-  "extends": "eslint-config-pretty"
+  "extends": "eslint-config-pretty",
+  "rules": {
+    "jsx-a11y/alt-text": "off"
+  }
 }

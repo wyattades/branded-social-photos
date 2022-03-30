@@ -6,8 +6,12 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
+  if (req.method !== 'POST') return res.status(404).json({});
+
   try {
     const { data_url } = req.body;
+    if (typeof data_url !== 'string' || data_url.length < 10)
+      return res.status(400).json({});
 
     const { secure_url } = await cloudinary.v2.uploader.upload(data_url, {
       folder: 'uploads',
