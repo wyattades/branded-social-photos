@@ -110,7 +110,7 @@ export const BrandedWebcam: React.FC<{
         {screenshot ? (
           <button
             type="button"
-            className="rounded-md bg-red-500 px-4 py-2 text-white"
+            className="rounded-md bg-gray-200 px-4 py-2 hover:bg-gray-300"
             onClick={() => {
               setScreenshot(null);
             }}
@@ -120,7 +120,7 @@ export const BrandedWebcam: React.FC<{
         ) : (
           <button
             type="button"
-            className="rounded-md bg-red-500 px-4 py-2 text-white"
+            className="rounded-md bg-green-600 px-4 py-2 text-white hover:bg-green-700"
             onClick={capture}
           >
             Capture!

@@ -5,7 +5,7 @@ import type {
   NextPage,
 } from 'next';
 import * as _ from 'lodash-es';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   FacebookShareButton,
   LinkedinShareButton,
@@ -84,7 +84,7 @@ const upload = async (dataUrl: string) => {
   return null;
 };
 
-const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
+const BrandPage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   brand: { title: brandTitle, overlay_url: overlayUrl, link: brandLink },
 }) => {
   const [uploading, setUploading] = useState(false);
@@ -110,7 +110,7 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
 
       <main className="flex-1">
         <div
-          className="mx-auto w-full px-20 py-32"
+          className="mx-auto w-full px-20 py-24"
           style={{ maxWidth: '100rem' }}
         >
           <h1 className="mb-8 text-center text-5xl font-bold">
@@ -178,12 +178,17 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
       </main>
 
       <footer className="flex h-24 w-full items-center justify-center border-t">
-        <a href={brandLink} target="_blank" rel="noopener noreferrer">
-          Powered by <strong>{brandTitle}</strong>
+        <a
+          href={brandLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={brandLink ? 'hover:underline' : undefined}
+        >
+          Powered by <strong className="text-pink-700">{brandTitle}</strong>
         </a>
       </footer>
     </div>
   );
 };
 
-export default Home;
+export default BrandPage;
